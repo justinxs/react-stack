@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsx-hello-world</title>
+    <style>
+        .hello-world {
+            color: chocolate;
+        }
+    </style>
+</head>
+<body>
+    <div id="root1"></div>
+    <div id="root2"></div>
+    <div id="root3"></div>
+
+    <script src="../lib/react.development.js"></script>
+    <script src="../lib/react-dom.development.js"></script>
+    <script src="../lib/babel.min.js"></script>
+
+    <script type="text/babel">
+        // 标签方式
+        const element = <h1 className="hello-world">Hello, world!</h1>;
+        ReactDOM.render(
+            element,
+            document.getElementById('root1')
+        );
+
+        // 标签表达式
+        function formatName(user) {
+            return user.firstName + ' ' + user.lastName;
+        }
+        const user = {
+            firstName: 'Harper',
+            lastName: 'Perez'
+        };
+        function getElement(user) {
+            if (user) {
+                return <h1 className="hello-world">Hello, {formatName(user)}!</h1>;
+            }
+            return <h1 className="hello-world">Hello, Stranger.</h1>;
+        }
+        ReactDOM.render(
+            getElement(user),
+            document.getElementById('root2')
+        );
+
+
+        // 组件方式
+        class Hello extends React.Component {
+            render() {
+                return <div className={this.props.className}>Hello {this.props.toWhat}</div>;
+            }
+        }
+        ReactDOM.render(
+            <Hello className="hello-world" toWhat="World" />,
+            document.getElementById('root3')
+        );
+    </script>
+</body>
+</html>

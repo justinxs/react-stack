@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hello-world</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .hello {
+            color: aqua;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="../lib/react.development.js"></script>
+    <script src="../lib/react-dom.development.js"></script>
+    <!-- hello world -->
+    <script>
+        class HelloWorld extends React.Component {
+            render() {
+                return React.createElement('h1', {className: 'hello'}, `Hello ${this.props.toWhat}`);
+            }
+        }
+    </script>
+    <script>
+        ReactDOM.render(
+            React.createElement(HelloWorld, {toWhat: 'World'}, null),
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsx-list</title>
+    <style>
+        
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="../lib/react.development.js"></script>
+    <script src="../lib/react-dom.development.js"></script>
+    <script src="../lib/babel.min.js"></script>
+
+    <script type="text/babel">
+        function ListItem(props) {
+            // 正确！这里不需要指定 key：
+            return <li>{props.value}</li>;
+        }
+
+        function NumberList(props) {
+            const numbers = props.numbers;
+            const listItems = numbers.map((number) =>
+                // 正确！key 应该在数组的上下文中被指定
+                <ListItem key={number.toString()} value={number} />
+            );
+            return (
+                <ul>
+                {listItems}
+                </ul>
+            );
+        }
+        function NumberList1(props) {
+            const numbers = props.numbers;
+            return (
+                <ul>
+                {numbers.map((number) =>
+                    <ListItem key={number.toString()}
+                            value={number} />
+                )}
+                </ul>
+            );
+        }
+        const numbers = [1, 2, 3, 4, 5];
+        ReactDOM.render(
+            <div>
+                <NumberList numbers={numbers} />
+                <NumberList1 numbers={numbers} />
+            </div>,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
