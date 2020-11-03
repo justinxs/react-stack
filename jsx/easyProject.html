@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>jsx-easy project</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        .search-table {
+            width: 1200px;
+            margin: 50px auto 0;
+        }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0px;
+        }
+        table th, table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #cccccc;
+        }
+        .empty-td {
+            height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="../lib/react.development.js"></script>
+    <script src="../lib/react-dom.development.js"></script>
+    <script src="../lib/babel.min.js"></script>
+
+    <script type="text/babel">
+        class SearchBar extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            nameHandle(e) {
+                console.log(e.target.value)
+                this.props.onNameChange(e.target.value)
+            }
+            stockHandle(e) {
+                console.log(e.target.checked)
+                this.props.onStockChange(e.target.checked)
+            }
+            render() {
+                return (
+                    <div className="search-bar">
+                        <div className="search">
+                            <input type="text" value={this.props.name} onChange={(e) => this.nameHandle(e)} placeholder="search..." />
+                        </div>
+                        <div className="checkbox">
+                            <input type="checkbox" id="cbox1" checked={this.props.stocked} onChange={(e) => this.stockHandle(e)} />
+                            <span>Only show products in stock</span>
+                        </div>
+                    </div>
+                )
+            }
+        }
+
+        class ListHeader extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <tr>
+                        <td colSpan={this.props.colCount}>{this.props.category}</td>
+                    </tr>
+                )
+            }
+        }
+
+        class ListItem extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <tr>
+                        {this.props.tableHeader.map(key => 
+                            <td key={key}>{this.props.item[key]}</td>
+                        )}
+                    </tr>
+                )
+            }
+        }
+        
+        class TableHeader extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <thead>
+                        <tr>
+                            {
+                                this.props.tableHeader.map(header => 
+                                    <th key={header}>{header}</th>
+                                )
+                            }
+                        </tr>
+                    </thead>
+                )
+            }
+        }
+        class TableBody extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                const renderTableData = this.props.tableData.reduce((arr, item, i) => {
+                    let curIndex;
+                    if (arr.some((el, i) => el.category == item.category && ((curIndex = i) || true))) {
+                        arr[curIndex].list.push(item)
+                    } else {
+                        arr.push({
+                            category: item.category,
+                            list: [item]
+                        })
+                    }
+                    return arr
+                }, [])
+                return (
+                    <tbody>
+                        {
+                            renderTableData.map((item, i) => 
+                                <React.Fragment key={item.category}>
+                                    <ListHeader category={item.category} colCount={this.props.tableHeader.length} />
+                                    {
+                                        item.list.map((el, j) => 
+                                            <ListItem item={el} tableHeader={this.props.tableHeader} key={j} />
+                                        )
+                                    }
+                                </React.Fragment>
+                            )
+                        }
+                    </tbody>
+                )
+            }
+        }
+
+        class EmptyBody extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <tbody>
+                        <tr><td className="empty-td" colSpan={this.props.tableHeader.length}>暂无数据</td></tr>
+                    </tbody>
+                )
+            }
+        }
+        
+        class ProductTable extends React.Component {
+            constructor(props) {
+                super(props)
+            }
+            render() {
+                return (
+                    <table className="table">
+                        <TableHeader tableHeader={this.props.tableHeader} />
+                        {
+                            this.props.tableData.length 
+                                ? <TableBody tableData={this.props.tableData} tableHeader={this.props.tableHeader} />
+                                : <EmptyBody tableHeader={this.props.tableHeader} />
+                        }
+                        
+                    </table>
+                )
+            }
+        }
+        class FilterableProductTable extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    loading: true,
+                    name: 'F',
+                    stocked: true,
+                    tableHeader: ['name', 'price', 'remark'],
+                    tableData: []
+                };
+                this.getData({name: this.state.name, stocked: this.state.stocked}).then(data => {
+                    this.setState({
+                        loading: false,
+                        tableData: data
+                    })
+                })
+            }
+            getData(params = {}) {
+                let data = [
+                    {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football", remark: '备你妹的注啊'},
+                    {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball", remark: '备你妹的注啊'},
+                    {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball", remark: '备你妹的注啊'},
+                    {category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch", remark: '备你妹的注啊'},
+                    {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5", remark: '备你妹的注啊'},
+                    {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7", remark: '备你妹的注啊'}
+                ]
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        resolve(data.filter(item => {
+                            let flag = true
+                            if (params.name && params.stocked) {
+                                flag = item.name.indexOf(params.name) > -1 && item.stocked
+                            } else if (params.name) {
+                                flag = item.name.indexOf(params.name) > -1
+                            } else if (params.stocked) {
+                                flag = item.stocked
+                            }
+                            return flag
+                        }))
+                    }, 1000);
+                })
+            }
+            nameHandle(val) {
+                this.setState({
+                    loading: true,
+                    name: val
+                })
+                this.getData({stocked: this.state.stocked, name: val}).then(data => {
+                    this.setState({
+                        loading: false,
+                        tableData: data
+                    })
+                })
+            }
+            stockHandle(val) {
+                this.setState({
+                    loading: true,
+                    stocked: val
+                })
+                this.getData({stocked: val, name: this.state.name}).then(data => {
+                    this.setState({
+                        loading: false,
+                        tableData: data
+                    })
+                })
+            }
+            render() {
+                return (
+                    <div className="search-table">
+                        <SearchBar 
+                            name={this.state.name} 
+                            stocked={this.state.stocked} 
+                            onNameChange={(value) => this.nameHandle(value)} 
+                            onStockChange={(value) => this.stockHandle(value)} />
+                        {
+                            this.state.loading 
+                                ? <h2>Loading</h2> 
+                                : <ProductTable tableHeader={this.state.tableHeader} tableData={this.state.tableData} />
+                        }
+                    </div>
+                )
+            }
+        }
+
+        ReactDOM.render(
+            <div>
+                <FilterableProductTable />
+            </div>,
+            document.getElementById('root')
+        );
+    </script>
+</body>
+</html>
