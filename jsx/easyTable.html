@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>jsx-easy project</title>
+    <title>jsx-easy table</title>
     <style>
         * {
             padding: 0;
@@ -38,6 +38,16 @@
         class SearchBar extends React.Component {
             constructor(props) {
                 super(props)
+                this.textInput = React.createRef();
+            }
+            componentDidMount() {
+                this.textInput.current.focus()
+            }
+            componentWillUnmount() {
+
+            }
+            componentDidUpdate(prevProps, prevState, snapshot) {
+
             }
             nameHandle(e) {
                 console.log(e.target.value)
@@ -51,7 +61,7 @@
                 return (
                     <div className="search-bar">
                         <div className="search">
-                            <input type="text" value={this.props.name} onChange={(e) => this.nameHandle(e)} placeholder="search..." />
+                            <input type="text" ref={this.textInput} value={this.props.name} onChange={(e) => this.nameHandle(e)} placeholder="search..." />
                         </div>
                         <div className="checkbox">
                             <input type="checkbox" id="cbox1" checked={this.props.stocked} onChange={(e) => this.stockHandle(e)} />
